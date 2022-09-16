@@ -1,6 +1,9 @@
 package main;
 
-import main.StudentOrder;
+import answer.AnswerChildren;
+import answer.AnswerCityRegister;
+import answer.AnswerStudent;
+import answer.AnswerWedding;
 
 public class StudentOrderValidator {
 
@@ -11,13 +14,12 @@ public class StudentOrderValidator {
     static void checkAll() {
         StudentOrder studentOrder = readStudentOrder();
 
-        checkCityRegister(studentOrder);
-        checkWedding(studentOrder);
-        checkChildren(studentOrder);
-        checkStudent(studentOrder);
+        AnswerCityRegister answerCityRegister = checkCityRegister(studentOrder);
+        AnswerWedding answerWedding = checkWedding(studentOrder);
+        AnswerChildren answerChildren = checkChildren(studentOrder);
+        AnswerStudent answerStudent = checkStudent(studentOrder);
 
         sendMailStudentOrder(studentOrder);
-
     }
 
     static StudentOrder readStudentOrder() {
@@ -25,20 +27,28 @@ public class StudentOrderValidator {
         return studentOrder;
     }
 
-    static void checkCityRegister(StudentOrder studentOrder) {
+    static AnswerCityRegister checkCityRegister(StudentOrder studentOrder) {
         System.out.println("City register check is running");
+        AnswerCityRegister cityRegister = new AnswerCityRegister();
+        return cityRegister;
     }
 
-    static void checkWedding(StudentOrder studentOrder) {
+    static AnswerWedding checkWedding(StudentOrder studentOrder) {
         System.out.println("Wedding check is running");
+        AnswerWedding answerWedding = new AnswerWedding();
+        return answerWedding;
     }
 
-    static void checkChildren(StudentOrder studentOrder) {
+    static AnswerChildren checkChildren(StudentOrder studentOrder) {
         System.out.println("Children check is running");
+        AnswerChildren answerChildren = new AnswerChildren();
+        return answerChildren;
     }
 
-    static void checkStudent(StudentOrder studentOrder) {
+    static AnswerStudent checkStudent(StudentOrder studentOrder) {
         System.out.println("Student check is running");
+        AnswerStudent answerStudent = new AnswerStudent();
+        return answerStudent;
     }
 
     static void sendMailStudentOrder(StudentOrder studentOrder) {
