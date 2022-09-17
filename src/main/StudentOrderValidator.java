@@ -4,6 +4,7 @@ import answer.AnswerChildren;
 import answer.AnswerCityRegister;
 import answer.AnswerStudent;
 import answer.AnswerWedding;
+import validator.*;
 
 public class StudentOrderValidator {
 
@@ -12,15 +13,28 @@ public class StudentOrderValidator {
     }
 
     static void checkAll() {
-        StudentOrder studentOrder = readStudentOrder();
 
-        AnswerCityRegister answerCityRegister = checkCityRegister(studentOrder);
-        AnswerWedding answerWedding = checkWedding(studentOrder);
-        AnswerChildren answerChildren = checkChildren(studentOrder);
-        AnswerStudent answerStudent = checkStudent(studentOrder);
+        while (true) {
+            StudentOrder studentOrder = readStudentOrder();
 
-        sendMailStudentOrder(studentOrder);
+            if (studentOrder == null) {
+                break;
+            } else {
+                AnswerCityRegister answerCityRegister = checkCityRegister(studentOrder);
+                if (!answerCityRegister.success) {
+//                    continue;
+                    break;
+                }
+                AnswerWedding answerWedding = checkWedding(studentOrder);
+                AnswerChildren answerChildren = checkChildren(studentOrder);
+                AnswerStudent answerStudent = checkStudent(studentOrder);
+
+                sendMailStudentOrder(studentOrder);
+                studentOrder = readStudentOrder();
+            }
+        }
     }
+
 
     static StudentOrder readStudentOrder() {
         StudentOrder studentOrder = new StudentOrder();
@@ -28,30 +42,28 @@ public class StudentOrderValidator {
     }
 
     static AnswerCityRegister checkCityRegister(StudentOrder studentOrder) {
-        System.out.println("City register check is running");
-        AnswerCityRegister cityRegister = new AnswerCityRegister();
-        return cityRegister;
+        CityRegisterValidator srv1 = new CityRegisterValidator();
+        srv1.setHostName("Host1");
+        srv1.setLogin("Login1");
+        srv1.setPassword("Password1");
+
+        AnswerCityRegister answer1 = srv1.checkCityRegister(studentOrder);
+        return answer1;
     }
 
     static AnswerWedding checkWedding(StudentOrder studentOrder) {
-        System.out.println("Wedding check is running");
-        AnswerWedding answerWedding = new AnswerWedding();
-        return answerWedding;
+        return WeddingValidator.checkWedding(studentOrder);
     }
 
     static AnswerChildren checkChildren(StudentOrder studentOrder) {
-        System.out.println("Children check is running");
-        AnswerChildren answerChildren = new AnswerChildren();
-        return answerChildren;
+        return ChildrenValidator.checkChildren(studentOrder);
     }
 
     static AnswerStudent checkStudent(StudentOrder studentOrder) {
-        System.out.println("Student check is running");
-        AnswerStudent answerStudent = new AnswerStudent();
-        return answerStudent;
+        return StudentValidator.checkStudent(studentOrder);
     }
 
     static void sendMailStudentOrder(StudentOrder studentOrder) {
-
+        SendMailValidator.sendMailStudentOrder(studentOrder);
     }
 }
