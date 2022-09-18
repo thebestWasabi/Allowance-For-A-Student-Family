@@ -10,6 +10,10 @@ public class Person {
     private LocalDate dateOfBirth;
     private Address address;
 
+    public String getPersonString() {
+        return surName + " " + givenName;
+    }
+
     public String getSurName() {
         return surName;
     }

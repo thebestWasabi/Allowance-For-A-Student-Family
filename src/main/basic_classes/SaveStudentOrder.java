@@ -7,12 +7,15 @@ import main.domain.StudentOrder;
 public class SaveStudentOrder {
 
     public static void main(String[] args) {
-        StudentOrder studentOrder1 = new StudentOrder();
+        buildStudentOrder();
+//        StudentOrder so = new StudentOrder();
+//        long ans = saveStudentOrder(so);
+//        System.out.println(ans);
     }
 
     static long saveStudentOrder(StudentOrder studentOrder) {
         long answer = 199;
-        System.out.print("Сохранение студенчиской заявки: ");
+        System.out.print("Сохранение студенчиской заявки");
         return answer;
     }
 
@@ -20,7 +23,12 @@ public class SaveStudentOrder {
         StudentOrder studentOrder = new StudentOrder();
         Adult husband = new Adult();
         husband.setGivenName("Максим");
+        husband.setSurName("Хамзин");
+        husband.setPassportNumber("123456");
         studentOrder.setHusband(husband);
+
+        String ans = husband.getPersonString();
+        System.out.println(ans);
 
         return studentOrder;
     }
