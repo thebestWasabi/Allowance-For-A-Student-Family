@@ -8,7 +8,7 @@ import main.domain.StudentOrder;
 import main.mail.MailSender;
 import main.validator.*;
 
-public class StudentOrderValidator {
+public class StudentOrderChecker {
 
     public static void main(String[] args) {
         checkAll();
@@ -21,6 +21,7 @@ public class StudentOrderValidator {
 
             if (studentOrder == null) {
                 break;
+
             } else {
                 AnswerCityRegister answerCityRegister = checkCityRegister(studentOrder);
 

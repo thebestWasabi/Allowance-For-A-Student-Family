@@ -2,40 +2,40 @@ package main.domain;
 
 public class StudentOrder {
 
-    private String husbandFirstName;
-    private String husbandLastName;
-    private String wifeFirstName;
-    private String wifeLastName;
+    private long studentOrderId;
+    private Adult husband;
+    private Adult wife;
+    private Child child;
 
-    public String getHusbandFirstName() {
-        return husbandFirstName;
+    public long getStudentOrderId() {
+        return studentOrderId;
     }
 
-    public void setHusbandFirstName(String husbandFirstName) {
-        this.husbandFirstName = husbandFirstName;
+    public void setStudentOrderId(long studentOrderId) {
+        this.studentOrderId = studentOrderId;
     }
 
-    public String getHusbandLastName() {
-        return husbandLastName;
+    public Adult getHusband() {
+        return husband;
     }
 
-    public void setHusbandLastName(String husbandLastName) {
-        this.husbandLastName = husbandLastName;
+    public void setHusband(Adult husband) {
+        this.husband = husband;
     }
 
-    public String getWifeFirstName() {
-        return wifeFirstName;
+    public Adult getWife() {
+        return wife;
     }
 
-    public void setWifeFirstName(String wifeFirstName) {
-        this.wifeFirstName = wifeFirstName;
+    public void setWife(Adult wife) {
+        this.wife = wife;
     }
 
-    public String getWifeLastName() {
-        return wifeLastName;
+    public Child getChild() {
+        return child;
     }
 
-    public void setWifeLastName(String wifeLastName) {
-        this.wifeLastName = wifeLastName;
+    public void setChild(Child child) {
+        this.child = child;
     }
 }
