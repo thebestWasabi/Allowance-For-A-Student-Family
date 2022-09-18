@@ -1,6 +1,8 @@
-package main;
+package main.basic_classes;
 
-public class Main {
+import main.domain.StudentOrder;
+
+public class SaveStudentOrder {
 
     public static void main(String[] args) {
         StudentOrder studentOrder1 = new StudentOrder();

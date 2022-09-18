@@ -1,11 +1,11 @@
-package validator;
+package main.validator;
 
-import answer.AnswerWedding;
-import main.StudentOrder;
+import main.answer.AnswerWedding;
+import main.domain.StudentOrder;
 
 public class WeddingValidator {
 
-    public static AnswerWedding checkWedding(StudentOrder studentOrder) {
+    public AnswerWedding checkWedding(StudentOrder studentOrder) {
         System.out.println("Wedding check is running");
         AnswerWedding answerWedding = new AnswerWedding();
         return answerWedding;

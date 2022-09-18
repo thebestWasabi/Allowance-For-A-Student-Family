@@ -1,7 +1,7 @@
-package validator;
+package main.validator;
 
-import answer.AnswerCityRegister;
-import main.StudentOrder;
+import main.answer.AnswerCityRegister;
+import main.domain.StudentOrder;
 
 public class CityRegisterValidator {
 
@@ -16,14 +16,16 @@ public class CityRegisterValidator {
         return cityRegister;
     }
 
+    public CityRegisterValidator() {
+        hostName = "Host1";
+        login = "Login1";
+        password = "Password1";
+    }
+
     public CityRegisterValidator(String hostName, String login, String password) {
         this.hostName = hostName;
         this.login = login;
         this.password = password;
-    }
-
-    public CityRegisterValidator() {
-
     }
 
     public String getHostName() {

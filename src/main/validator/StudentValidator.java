@@ -1,11 +1,11 @@
-package validator;
+package main.validator;
 
-import answer.AnswerStudent;
-import main.StudentOrder;
+import main.answer.AnswerStudent;
+import main.domain.StudentOrder;
 
 public class StudentValidator {
 
-    public static AnswerStudent checkStudent(StudentOrder studentOrder) {
+    public AnswerStudent checkStudent(StudentOrder studentOrder) {
         System.out.println("Student check is running");
         AnswerStudent answerStudent = new AnswerStudent();
         return answerStudent;

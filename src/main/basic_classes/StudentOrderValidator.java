@@ -1,10 +1,12 @@
-package main;
+package main.basic_classes;
 
-import answer.AnswerChildren;
-import answer.AnswerCityRegister;
-import answer.AnswerStudent;
-import answer.AnswerWedding;
-import validator.*;
+import main.answer.AnswerChildren;
+import main.answer.AnswerCityRegister;
+import main.answer.AnswerStudent;
+import main.answer.AnswerWedding;
+import main.domain.StudentOrder;
+import main.mail.MailSender;
+import main.validator.*;
 
 public class StudentOrderValidator {
 
@@ -21,10 +23,11 @@ public class StudentOrderValidator {
                 break;
             } else {
                 AnswerCityRegister answerCityRegister = checkCityRegister(studentOrder);
+
                 if (!answerCityRegister.success) {
-//                    continue;
                     break;
                 }
+
                 AnswerWedding answerWedding = checkWedding(studentOrder);
                 AnswerChildren answerChildren = checkChildren(studentOrder);
                 AnswerStudent answerStudent = checkStudent(studentOrder);
@@ -43,27 +46,25 @@ public class StudentOrderValidator {
 
     static AnswerCityRegister checkCityRegister(StudentOrder studentOrder) {
         CityRegisterValidator srv1 = new CityRegisterValidator();
-        srv1.setHostName("Host1");
-        srv1.setLogin("Login1");
-        srv1.setPassword("Password1");
-
-        AnswerCityRegister answer1 = srv1.checkCityRegister(studentOrder);
-        return answer1;
+        return srv1.checkCityRegister(studentOrder);
     }
 
     static AnswerWedding checkWedding(StudentOrder studentOrder) {
-        return WeddingValidator.checkWedding(studentOrder);
+        WeddingValidator wd = new WeddingValidator();
+        return wd.checkWedding(studentOrder);
     }
 
     static AnswerChildren checkChildren(StudentOrder studentOrder) {
-        return ChildrenValidator.checkChildren(studentOrder);
+        ChildrenValidator chv = new ChildrenValidator();
+        return chv.checkChildren(studentOrder);
     }
 
     static AnswerStudent checkStudent(StudentOrder studentOrder) {
-        return StudentValidator.checkStudent(studentOrder);
+        StudentValidator sv = new StudentValidator();
+        return sv.checkStudent(studentOrder);
     }
 
     static void sendMailStudentOrder(StudentOrder studentOrder) {
-        SendMailValidator.sendMailStudentOrder(studentOrder);
+        new MailSender().sendMailStudentOrder(studentOrder);
     }
 }
