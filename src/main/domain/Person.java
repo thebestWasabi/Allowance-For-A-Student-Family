@@ -2,7 +2,7 @@ package main.domain;
 
 import java.time.LocalDate;
 
-public class Person {
+public abstract class Person {
 
     private String surName;
     private String givenName;
