@@ -8,19 +8,23 @@ public class CityRegisterValidator {
     private String hostName;
     private String login;
     private String password;
+    private CityRegisterChecker personChecker;
 
-    public AnswerCityRegister checkCityRegister(StudentOrder studentOrder) {
-        System.out.printf("City register check is running: %s, %s, %s \n", hostName, login, password);
-        AnswerCityRegister cityRegister = new AnswerCityRegister();
-        cityRegister.success = false;
-        return cityRegister;
-    }
 
     public CityRegisterValidator() {
-        hostName = "Host1";
-        login = "Login1";
-        password = "Password1";
+        personChecker = new FakeCityRegisterChecker();
     }
+
+
+    public AnswerCityRegister checkCityRegister(StudentOrder studentOrder) {
+        personChecker.checkPerson(studentOrder.getHusband());
+        personChecker.checkPerson(studentOrder.getWife());
+        personChecker.checkPerson(studentOrder.getChild());
+
+        AnswerCityRegister answer = new AnswerCityRegister();
+        return answer;
+    }
+
 
     public CityRegisterValidator(String hostName, String login, String password) {
         this.hostName = hostName;
