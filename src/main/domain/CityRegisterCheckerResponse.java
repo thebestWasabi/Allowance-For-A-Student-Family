@@ -5,6 +5,14 @@ public class CityRegisterCheckerResponse {
     private boolean existing;
     private Boolean temporal;
 
+    @Override
+    public String toString() {
+        return "CityRegisterCheckerResponse{" +
+                "existing=" + existing +
+                ", temporal=" + temporal +
+                '}';
+    }
+
     public boolean isExisting() {
         return existing;
     }

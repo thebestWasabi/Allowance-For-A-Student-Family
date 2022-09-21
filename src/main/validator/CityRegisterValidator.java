@@ -1,7 +1,9 @@
 package main.validator;
 
 import main.answer.AnswerCityRegister;
+import main.domain.CityRegisterCheckerResponse;
 import main.domain.StudentOrder;
+import main.exception.CityRegisterException;
 
 public class CityRegisterValidator {
 
@@ -17,9 +19,14 @@ public class CityRegisterValidator {
 
 
     public AnswerCityRegister checkCityRegister(StudentOrder studentOrder) {
-        personChecker.checkPerson(studentOrder.getHusband());
-        personChecker.checkPerson(studentOrder.getWife());
-        personChecker.checkPerson(studentOrder.getChild());
+
+        try {
+            CityRegisterCheckerResponse hAnswer = personChecker.checkPerson(studentOrder.getHusband());
+            CityRegisterCheckerResponse wAnswer = personChecker.checkPerson(studentOrder.getWife());
+            CityRegisterCheckerResponse chAnswer = personChecker.checkPerson(studentOrder.getChild());
+        } catch (CityRegisterException ex) {
+            ex.printStackTrace(System.out);
+        }
 
         AnswerCityRegister answer = new AnswerCityRegister();
         return answer;
@@ -31,6 +38,7 @@ public class CityRegisterValidator {
         this.login = login;
         this.password = password;
     }
+
 
     public String getHostName() {
         return hostName;

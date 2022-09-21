@@ -38,7 +38,6 @@ public class StudentOrderChecker {
     public void checkAll() {
         StudentOrder[] soArray = readStudentOrders();
         for (StudentOrder studentOrder : soArray) {
-            System.out.println();
             checkOneOrder(studentOrder);
         }
     }
@@ -55,10 +54,10 @@ public class StudentOrderChecker {
 
     public void checkOneOrder(StudentOrder studentOrder) {
         AnswerCityRegister answerCityRegister = checkCityRegister(studentOrder);
-        AnswerWedding answerWedding = checkWedding(studentOrder);
-        AnswerChildren answerChildren = checkChildren(studentOrder);
-        AnswerStudent answerStudent = checkStudent(studentOrder);
-        sendMailStudentOrder(studentOrder);
+//        AnswerWedding answerWedding = checkWedding(studentOrder);
+//        AnswerChildren answerChildren = checkChildren(studentOrder);
+//        AnswerStudent answerStudent = checkStudent(studentOrder);
+//        sendMailStudentOrder(studentOrder);
     }
 
 
