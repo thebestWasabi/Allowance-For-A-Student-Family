@@ -1,8 +1,8 @@
-package main.validator;
+package main.validator.register;
 
 import main.domain.Adult;
 import main.domain.Child;
-import main.domain.CityRegisterCheckerResponse;
+import main.register.CityRegisterResponse;
 import main.domain.Person;
 import main.exception.CityRegisterException;
 
@@ -17,9 +17,10 @@ public class FakeCityRegisterChecker implements CityRegisterChecker {
     private static final String ERROR_1 = "1002";
     private static final String ERROR_2 = "2002";
 
-    public CityRegisterCheckerResponse checkPerson(Person person) throws CityRegisterException {
 
-        CityRegisterCheckerResponse response = new CityRegisterCheckerResponse();
+    public CityRegisterResponse checkPerson(Person person) throws CityRegisterException {
+
+        CityRegisterResponse response = new CityRegisterResponse();
 
         if (person instanceof Adult) {
             Adult adult = (Adult) person;

@@ -1,7 +1,7 @@
 package main.basic_classes;
 
 import main.answer.AnswerChildren;
-import main.answer.AnswerCityRegister;
+import main.register.AnswerCityRegister;
 import main.answer.AnswerStudent;
 import main.answer.AnswerWedding;
 import main.domain.StudentOrder;
@@ -11,6 +11,9 @@ import main.validator.CityRegisterValidator;
 import main.validator.StudentValidator;
 import main.validator.WeddingValidator;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class StudentOrderChecker {
 
     private CityRegisterValidator cityRegisterValidator;
@@ -18,7 +21,6 @@ public class StudentOrderChecker {
     private ChildrenValidator childrenValidator;
     private StudentValidator studentValidator;
     private MailSender mailSender;
-
 
     public StudentOrderChecker() {
         cityRegisterValidator = new CityRegisterValidator();
@@ -28,29 +30,26 @@ public class StudentOrderChecker {
         mailSender = new MailSender();
     }
 
-
     public static void main(String[] args) {
         StudentOrderChecker soChecker = new StudentOrderChecker();
         soChecker.checkAll();
     }
 
-
     public void checkAll() {
-        StudentOrder[] soArray = readStudentOrders();
-        for (StudentOrder studentOrder : soArray) {
+        List<StudentOrder> studentOrderList = readStudentOrders();
+        for (StudentOrder studentOrder : studentOrderList) {
             checkOneOrder(studentOrder);
         }
     }
 
-
-    public StudentOrder[] readStudentOrders() {
-        StudentOrder[] soArray = new StudentOrder[3];
-        for (int i = 0; i < soArray.length; i++) {
-            soArray[i] = SaveStudentOrder.buildStudentOrder(i);
+    public List<StudentOrder> readStudentOrders() {
+        List<StudentOrder> studentOrderList = new LinkedList<>();
+        for (int i = 0; i < 5; i++) {
+            StudentOrder studentOrder = SaveStudentOrder.buildStudentOrder(i);
+            studentOrderList.add(studentOrder);
         }
-        return soArray;
+        return studentOrderList;
     }
-
 
     public void checkOneOrder(StudentOrder studentOrder) {
         AnswerCityRegister answerCityRegister = checkCityRegister(studentOrder);
@@ -59,7 +58,6 @@ public class StudentOrderChecker {
 //        AnswerStudent answerStudent = checkStudent(studentOrder);
 //        sendMailStudentOrder(studentOrder);
     }
-
 
     public AnswerCityRegister checkCityRegister(StudentOrder studentOrder) {
         return cityRegisterValidator.checkCityRegister(studentOrder);

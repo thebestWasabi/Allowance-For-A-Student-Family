@@ -10,7 +10,6 @@ public abstract class Person {
     private LocalDate dateOfBirth;
     private Address address;
 
-
     public Person() {
     }
 

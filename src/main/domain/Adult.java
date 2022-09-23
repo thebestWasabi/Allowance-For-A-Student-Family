@@ -11,7 +11,6 @@ public class Adult extends Person {
     private String university;
     private String studentId;
 
-
     public Adult() {
     }
 

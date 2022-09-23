@@ -1,13 +1,13 @@
-package main.domain;
+package main.register;
 
-public class CityRegisterCheckerResponse {
+public class CityRegisterResponse {
 
     private boolean existing;
     private Boolean temporal;
 
     @Override
     public String toString() {
-        return "CityRegisterCheckerResponse{" +
+        return "CityRegisterCheckerResponse {" +
                 "existing=" + existing +
                 ", temporal=" + temporal +
                 '}';
