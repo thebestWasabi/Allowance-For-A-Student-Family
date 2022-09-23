@@ -1,25 +1,47 @@
 package main.validator;
 
-import main.answer.AnswerCityRegister;
+import main.domain.Person;
+import main.register.AnswerCityRegister;
+import main.domain.Child;
+import main.register.AnswerCityRegisterItem;
+import main.register.CityRegisterResponse;
 import main.domain.StudentOrder;
+import main.exception.CityRegisterException;
+import main.validator.register.CityRegisterChecker;
+import main.validator.register.FakeCityRegisterChecker;
+
+import java.util.List;
 
 public class CityRegisterValidator {
 
     private String hostName;
     private String login;
     private String password;
-
-    public AnswerCityRegister checkCityRegister(StudentOrder studentOrder) {
-        System.out.printf("City register check is running: %s, %s, %s \n", hostName, login, password);
-        AnswerCityRegister cityRegister = new AnswerCityRegister();
-        cityRegister.success = false;
-        return cityRegister;
-    }
+    private CityRegisterChecker personChecker;
 
     public CityRegisterValidator() {
-        hostName = "Host1";
-        login = "Login1";
-        password = "Password1";
+        personChecker = new FakeCityRegisterChecker();
+    }
+
+    public AnswerCityRegister checkCityRegister(StudentOrder studentOrder) {
+        AnswerCityRegister answer = new AnswerCityRegister();
+
+        answer.addItem(checkPerson(studentOrder.getHusband()));
+        answer.addItem(checkPerson(studentOrder.getWife()));
+        for (Child child : studentOrder.getChildren()) {
+            answer.addItem(checkPerson(child));
+        }
+
+        return answer;
+    }
+
+    private AnswerCityRegisterItem checkPerson(Person person) {
+        try {
+            CityRegisterResponse chAnswer = personChecker.checkPerson(person);
+        } catch (CityRegisterException ex) {
+            ex.printStackTrace(System.out);
+        }
+        return null;
     }
 
     public CityRegisterValidator(String hostName, String login, String password) {
