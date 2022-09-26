@@ -1,6 +1,7 @@
 package main.validator;
 
 import main.domain.Person;
+import main.exception.TransportException;
 import main.register.AnswerCityRegister;
 import main.domain.Child;
 import main.register.AnswerCityRegisterItem;
@@ -14,9 +15,8 @@ import java.util.List;
 
 public class CityRegisterValidator {
 
-    private String hostName;
-    private String login;
-    private String password;
+    public static final String IN_CODE = "NO GRN";
+
     private CityRegisterChecker personChecker;
 
     public CityRegisterValidator() {
@@ -31,46 +31,32 @@ public class CityRegisterValidator {
         for (Child child : studentOrder.getChildren()) {
             answer.addItem(checkPerson(child));
         }
-
         return answer;
     }
 
     private AnswerCityRegisterItem checkPerson(Person person) {
+        AnswerCityRegisterItem.CityStatus status = null;
+        AnswerCityRegisterItem.CityError error = null;
+
         try {
-            CityRegisterResponse chAnswer = personChecker.checkPerson(person);
+            CityRegisterResponse tmp = personChecker.checkPerson(person);
+            status = tmp.isExisting() ? AnswerCityRegisterItem.CityStatus.YES : AnswerCityRegisterItem.CityStatus.NO;
         } catch (CityRegisterException ex) {
             ex.printStackTrace(System.out);
+            status = AnswerCityRegisterItem.CityStatus.ERROR;
+            error = new AnswerCityRegisterItem.CityError(ex.getCode(), ex.getMessage());
+        } catch (TransportException ex) {
+            ex.printStackTrace(System.out);
+            status = AnswerCityRegisterItem.CityStatus.ERROR;
+            error = new AnswerCityRegisterItem.CityError(IN_CODE, ex.getMessage());
+        } catch (Exception ex) {
+            ex.printStackTrace(System.out);
+            status = AnswerCityRegisterItem.CityStatus.ERROR;
+            error = new AnswerCityRegisterItem.CityError(IN_CODE, ex.getMessage());
         }
-        return null;
+
+        AnswerCityRegisterItem answer = new AnswerCityRegisterItem(person, status, error);
+        return answer;
     }
 
-    public CityRegisterValidator(String hostName, String login, String password) {
-        this.hostName = hostName;
-        this.login = login;
-        this.password = password;
-    }
-
-    public String getHostName() {
-        return hostName;
-    }
-
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

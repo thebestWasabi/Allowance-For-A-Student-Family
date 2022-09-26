@@ -2,6 +2,7 @@ package main.validator.register;
 
 import main.domain.Adult;
 import main.domain.Child;
+import main.exception.TransportException;
 import main.register.CityRegisterResponse;
 import main.domain.Person;
 import main.exception.CityRegisterException;
@@ -14,11 +15,13 @@ public class FakeCityRegisterChecker implements CityRegisterChecker {
     private static final String GOOD_2 = "2000";
     private static final String BAD_1 = "1001";
     private static final String BAD_2 = "2001";
-    private static final String ERROR_1 = "1002";
-    private static final String ERROR_2 = "2002";
+    private static final String GRN_ERROR_1 = "1002";
+    private static final String GRN_ERROR_2 = "2002";
+    private static final String TRANSPORT_ERROR_1 = "1003";
+    private static final String TRANSPORT_ERROR_2 = "2003";
 
 
-    public CityRegisterResponse checkPerson(Person person) throws CityRegisterException {
+    public CityRegisterResponse checkPerson(Person person) throws CityRegisterException, TransportException {
 
         CityRegisterResponse response = new CityRegisterResponse();
 
@@ -32,8 +35,12 @@ public class FakeCityRegisterChecker implements CityRegisterChecker {
             if (passportSeries.equals(BAD_1) || passportSeries.equals(BAD_2)) {
                 response.setExisting(false);
             }
-            if (passportSeries.equals(ERROR_1) || passportSeries.equals(ERROR_2)) {
-                CityRegisterException ex = new CityRegisterException("Fake Error " + passportSeries);
+            if (passportSeries.equals(GRN_ERROR_1) || passportSeries.equals(GRN_ERROR_2)) {
+                CityRegisterException ex = new CityRegisterException("1", "GRN ERROR " + passportSeries);
+                throw ex;
+            }
+            if (passportSeries.equals(TRANSPORT_ERROR_1) || passportSeries.equals(TRANSPORT_ERROR_2)) {
+                TransportException ex = new TransportException("Transport ERROR " + passportSeries);
                 throw ex;
             }
         }

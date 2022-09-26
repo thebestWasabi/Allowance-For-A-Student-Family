@@ -1,12 +1,31 @@
 package main.basic_classes;
 
-import main.domain.*;
+import main.domain.Address;
+import main.domain.Adult;
+import main.domain.Child;
+import main.domain.StudentOrder;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.time.LocalDate;
 
 public class SaveStudentOrder {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        Class.forName("org.postgresql.Driver");
+        Connection connection = DriverManager.getConnection(
+                "jdbc:postgresql://localhost:5432/jc_student",
+                "postgres", "791223");
+
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM jc_street");
+        while (resultSet.next()) {
+            System.out.println(resultSet.getLong(1) + " : " + resultSet.getString(2));
+        }
+
+//        StudentOrder s = buildStudentOrder(10);
 //        StudentOrder so = new StudentOrder();
 //        long ans = saveStudentOrder(so);
 //        System.out.println(ans);
