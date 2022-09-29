@@ -29,42 +29,50 @@ public class StudentOrderDaoImpl implements StudentOrderDao {
 
     // TODO: 28.09.2022 refactoring - make one method
     private Connection getConnection() throws SQLException {
-        Connection connection = DriverManager.getConnection(
+        Connection connect = DriverManager.getConnection(
                 Config.getProperty(Config.DB_URL),
                 Config.getProperty(Config.DB_LOGIN),
                 Config.getProperty(Config.DB_PASSWORD));
-        return connection;
+        return connect;
     }
 
     @Override
     public Long saveStudentOrder(StudentOrder so) throws DaoException {
         long result = -1L;
 
-        try (Connection con = getConnection();
-             PreparedStatement statement = con.prepareStatement(INSERT_ORDER, new String[]{"student_order_id"})) {
+        try (Connection connect = getConnection();
+             PreparedStatement stmt = connect.prepareStatement(INSERT_ORDER, new String[]{"student_order_id"})) {
 
-            // Header
-            statement.setInt(1, StudentOrderStatus.START.ordinal());
-            statement.setTimestamp(2, java.sql.Timestamp.valueOf(LocalDateTime.now()));
+            connect.setAutoCommit(false);
+            try {
+                // Header
+                stmt.setInt(1, StudentOrderStatus.START.ordinal());
+                stmt.setTimestamp(2, java.sql.Timestamp.valueOf(LocalDateTime.now()));
 
-            // Husband and Wife
-            setParamsForAdult(statement, 3, so.getHusband());
-            setParamsForAdult(statement, 16, so.getWife());
+                // Husband and Wife
+                setParamsForAdult(stmt, 3, so.getHusband());
+                setParamsForAdult(stmt, 16, so.getWife());
 
-            // Marriage
-            statement.setString(29, so.getMarriageCertificateId());
-            statement.setLong(30, so.getMarriageOffice().getOfficeId());
-            statement.setDate(31, java.sql.Date.valueOf(so.getMarriageDate()));
+                // Marriage
+                stmt.setString(29, so.getMarriageCertificateId());
+                stmt.setLong(30, so.getMarriageOffice().getOfficeId());
+                stmt.setDate(31, java.sql.Date.valueOf(so.getMarriageDate()));
 
-            statement.executeUpdate();
+                stmt.executeUpdate();
 
-            ResultSet gKeysRs = statement.getGeneratedKeys();
-            if (gKeysRs.next()) {
-                result = gKeysRs.getLong(1);
+                ResultSet gKeysRs = stmt.getGeneratedKeys();
+                if (gKeysRs.next()) {
+                    result = gKeysRs.getLong(1);
+                }
+                gKeysRs.close();
+
+                saveChildren(connect, so, result);
+
+                connect.commit();
+            } catch (SQLException ex) {
+                connect.rollback();
+                throw ex;
             }
-            gKeysRs.close();
-
-            saveChildren(con, so, result);
 
         } catch (SQLException ex) {
             throw new DaoException(ex);
@@ -72,47 +80,48 @@ public class StudentOrderDaoImpl implements StudentOrderDao {
         return result;
     }
 
-    private void saveChildren(Connection con, StudentOrder so, Long soId) throws SQLException {
+    private void saveChildren(Connection connect, StudentOrder so, Long soId) throws SQLException {
 
-        try (PreparedStatement statement = con.prepareStatement(INSERT_CHILD)) {
+        try (PreparedStatement stmt = connect.prepareStatement(INSERT_CHILD)) {
             for (Child child : so.getChildren()) {
-                statement.setLong(1, soId);
-                setParamsForChild(statement ,child);
-                statement.executeUpdate();
+                stmt.setLong(1, soId);
+                setParamsForChild(stmt, child);
+                stmt.addBatch();
             }
+            stmt.executeBatch();
         }
     }
 
-    private static void setParamsForAdult(PreparedStatement statement, int start, Adult adult) throws SQLException {
-        setParamsForPerson(statement, start, adult);
-        statement.setString(start + 4, adult.getPassportSeries());
-        statement.setString(start + 5, adult.getPassportNumber());
-        statement.setDate(start + 6, Date.valueOf(adult.getIssueDate()));
-        statement.setLong(start + 7, adult.getIssueDepartment().getOfficeId());
-        setParamsForAddress(statement, start + 8, adult);
+    private static void setParamsForAdult(PreparedStatement stmt, int start, Adult adult) throws SQLException {
+        setParamsForPerson(stmt, start, adult);
+        stmt.setString(start + 4, adult.getPassportSeries());
+        stmt.setString(start + 5, adult.getPassportNumber());
+        stmt.setDate(start + 6, Date.valueOf(adult.getIssueDate()));
+        stmt.setLong(start + 7, adult.getIssueDepartment().getOfficeId());
+        setParamsForAddress(stmt, start + 8, adult);
     }
 
-    private void setParamsForChild(PreparedStatement statement, Child child) throws SQLException {
-        setParamsForPerson(statement, 2, child);
-        statement.setString(6, child.getCertificateNumber());
-        statement.setDate(7, java.sql.Date.valueOf(child.getIssueDate()));
-        statement.setLong(8, child.getIssueDepartment().getOfficeId());
-        setParamsForAddress(statement, 9, child);
+    private void setParamsForChild(PreparedStatement stmt, Child child) throws SQLException {
+        setParamsForPerson(stmt, 2, child);
+        stmt.setString(6, child.getCertificateNumber());
+        stmt.setDate(7, java.sql.Date.valueOf(child.getIssueDate()));
+        stmt.setLong(8, child.getIssueDepartment().getOfficeId());
+        setParamsForAddress(stmt, 9, child);
     }
 
-    private static void setParamsForPerson(PreparedStatement statement, int start, Person person) throws SQLException {
-        statement.setString(start, person.getSurName());
-        statement.setString(start + 1, person.getGivenName());
-        statement.setString(start + 2, person.getPatronymic());
-        statement.setDate(start + 3, Date.valueOf(person.getDateOfBirth()));
+    private static void setParamsForPerson(PreparedStatement stmt, int start, Person person) throws SQLException {
+        stmt.setString(start, person.getSurName());
+        stmt.setString(start + 1, person.getGivenName());
+        stmt.setString(start + 2, person.getPatronymic());
+        stmt.setDate(start + 3, Date.valueOf(person.getDateOfBirth()));
     }
 
-    private static void setParamsForAddress(PreparedStatement statement, int start, Person person) throws SQLException {
+    private static void setParamsForAddress(PreparedStatement stmt, int start, Person person) throws SQLException {
         Address adult_address = person.getAddress();
-        statement.setString(start, adult_address.getPostCode());
-        statement.setLong(start + 1, adult_address.getStreet().getStreetCode());
-        statement.setString(start + 2, adult_address.getBuilding());
-        statement.setString(start + 3, adult_address.getExtension());
-        statement.setString(start + 4, adult_address.getApartment());
+        stmt.setString(start, adult_address.getPostCode());
+        stmt.setLong(start + 1, adult_address.getStreet().getStreetCode());
+        stmt.setString(start + 2, adult_address.getBuilding());
+        stmt.setString(start + 3, adult_address.getExtension());
+        stmt.setString(start + 4, adult_address.getApartment());
     }
 }
