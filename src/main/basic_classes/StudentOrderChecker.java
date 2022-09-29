@@ -53,9 +53,11 @@ public class StudentOrderChecker {
 
     public void checkOneOrder(StudentOrder studentOrder) {
         AnswerCityRegister answerCityRegister = checkCityRegister(studentOrder);
+
 //        AnswerWedding answerWedding = checkWedding(studentOrder);
 //        AnswerChildren answerChildren = checkChildren(studentOrder);
 //        AnswerStudent answerStudent = checkStudent(studentOrder);
+
 //        sendMailStudentOrder(studentOrder);
     }
 
