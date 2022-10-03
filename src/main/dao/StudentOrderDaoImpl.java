@@ -8,6 +8,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StudentOrderDaoImpl implements StudentOrderDao {
 
@@ -38,8 +39,8 @@ public class StudentOrderDaoImpl implements StudentOrderDao {
             "WHERE student_order_status = ? ORDER BY student_order_date; ";
     
     public static final String SELECT_CHILD = "SELECT soch.*, ro.r_office_area_id, ro.r_office_name " +
-            "FROM jc_student_child soch" +
-            "INNER JOIN jc_register_office ro ON ro.r_office_id = soch.ch_register_office_id" +
+            "FROM jc_student_child soch " +
+            "INNER JOIN jc_register_office ro ON ro.r_office_id = soch.ch_register_office_id " +
             "WHERE soch.student_order_id IN ";
 
 
@@ -142,12 +143,11 @@ public class StudentOrderDaoImpl implements StudentOrderDao {
     public List<StudentOrder> getStudentOrders() throws DaoException {
         List<StudentOrder> result = new LinkedList<>();
 
-        try (Connection connect = getConnection();
-             PreparedStatement statement = connect.prepareStatement(SELECT_ORDERS)) {
+        try (Connection conn = getConnection();
+             PreparedStatement statement = conn.prepareStatement(SELECT_ORDERS)) {
 
             statement.setInt(1, StudentOrderStatus.START.ordinal());
             ResultSet resultSet = statement.executeQuery();
-            List<Long> ids = new LinkedList<>();
             while (resultSet.next()) {
                 StudentOrder studentOrder = new StudentOrder();
 
@@ -160,20 +160,26 @@ public class StudentOrderDaoImpl implements StudentOrderDao {
                 studentOrder.setWife(wife);
 
                 result.add(studentOrder);
-                ids.add(studentOrder.getStudentOrderId());
             }
-            StringBuilder sb = new StringBuilder("(");
-            for (Long id : ids) {
-                sb.append(sb.length() > 1 ? ", " : "").append(String.valueOf(id));
-            }
-            sb.append(")");
-            System.out.println(sb.toString());
+            findChildren(conn, result);
 
             resultSet.close();
         } catch (SQLException ex) {
             throw new DaoException(ex);
         }
         return result;
+    }
+
+    private void findChildren(Connection conn, List<StudentOrder> result) throws SQLException {
+        String collect = "(" +  result.stream().map(so -> String.valueOf(so.getStudentOrderId()))
+                .collect(Collectors.joining(",")) + ")";
+
+        try (PreparedStatement stmt = conn.prepareStatement(SELECT_CHILD + collect)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                System.out.println(rs.getLong(1) + ":" + rs.getString(3));
+            }
+        }
     }
 
     private Adult fillAdult(ResultSet rs, String prefix) throws SQLException {
@@ -223,7 +229,5 @@ public class StudentOrderDaoImpl implements StudentOrderDao {
         String name = resultSet.getString("r_office_name");
         RegisterOffice ro = new RegisterOffice(roId, areaId, name);
         studentOrder.setMarriageOffice(ro);
-
-
     }
 }
