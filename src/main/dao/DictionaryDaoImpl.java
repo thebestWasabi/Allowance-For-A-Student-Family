@@ -30,7 +30,6 @@ public class DictionaryDaoImpl implements DictionaryDao {
         return connection;
     }
 
-
     @Override
     public List<Street> findStreets(String pattern) throws DaoException {
         List<Street> result = new LinkedList<>();
@@ -52,7 +51,6 @@ public class DictionaryDaoImpl implements DictionaryDao {
 
         return result;
     }
-
 
     @Override
     public List<PassportOffice> findPassportOffices(String areaId) throws DaoException {
@@ -77,7 +75,6 @@ public class DictionaryDaoImpl implements DictionaryDao {
         return result;
     }
 
-
     @Override
     public List<RegisterOffice> findRegisterOffice(String areaId) throws DaoException {
         List<RegisterOffice> result = new LinkedList<>();
@@ -100,7 +97,6 @@ public class DictionaryDaoImpl implements DictionaryDao {
 
         return result;
     }
-
 
     @Override
     public List<CountryArea> findAreas(String areaId) throws DaoException {
@@ -127,7 +123,6 @@ public class DictionaryDaoImpl implements DictionaryDao {
 
         return result;
     }
-
 
     private String buildParam(String areaId) throws SQLException{
 

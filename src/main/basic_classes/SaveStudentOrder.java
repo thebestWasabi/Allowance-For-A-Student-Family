@@ -5,6 +5,7 @@ import main.dao.StudentOrderDaoImpl;
 import main.domain.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 public class SaveStudentOrder {
@@ -41,10 +42,15 @@ public class SaveStudentOrder {
 //            System.out.println(c.getAreaId() + ": " + c.getAreaName());
 //        }
 
-        StudentOrder s = buildStudentOrder(10);
+//        StudentOrder s = buildStudentOrder(10);
         StudentOrderDao dao = new StudentOrderDaoImpl();
-        Long id = dao.saveStudentOrder(s);
-        System.out.println(id);
+//        Long id = dao.saveStudentOrder(s);
+//        System.out.println(id);
+
+        List<StudentOrder> soList = dao.getStudentOrders();
+        for (StudentOrder so : soList) {
+            System.out.println(so.getStudentOrderId());
+        }
     }
 
 
@@ -72,9 +78,9 @@ public class SaveStudentOrder {
         Adult husband = new Adult("Петров", "Виктор", "Сергеевич", LocalDate.of(1968, 8, 24));
         husband.setPassportSeries("" + (1000 + id));
         husband.setPassportNumber("" + (100000 + id));
-        husband.setIssueDate(LocalDate.of(2017, 9, 15));
+        husband.setPassportIssueDate(LocalDate.of(2017, 9, 15));
         PassportOffice po1 = new PassportOffice(1L, "", "");
-        husband.setIssueDepartment(po1);
+        husband.setPassportDepartment(po1);
         husband.setStudentId("" + (100000 + id));
         husband.setAddress(address);
         husband.setUniversity(new University(2L, ""));
@@ -84,9 +90,9 @@ public class SaveStudentOrder {
         Adult wife = new Adult("Петрова", "Вероника", "Алексеевна", LocalDate.of(1999, 4, 23));
         wife.setPassportSeries("" + (2000 + id));
         wife.setPassportNumber("" + (200000 + id));
-        wife.setIssueDate(LocalDate.of(2018, 4, 5));
+        wife.setPassportIssueDate(LocalDate.of(2018, 4, 5));
         PassportOffice po2 = new PassportOffice(2L, "", "");
-        wife.setIssueDepartment(po2);
+        wife.setPassportDepartment(po2);
         wife.setStudentId("" + (200000 + id));
         wife.setAddress(address);
         wife.setUniversity(new University(1L, ""));
