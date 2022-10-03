@@ -36,6 +36,11 @@ public class StudentOrderDaoImpl implements StudentOrderDao {
             "INNER JOIN jc_passport_office po_h ON po_h.p_office_id = so.h_passport_office_id " +
             "INNER JOIN jc_passport_office po_w ON po_w.p_office_id = so.w_passport_office_id " +
             "WHERE student_order_status = ? ORDER BY student_order_date; ";
+    
+    public static final String SELECT_CHILD = "SELECT soch.*, ro.r_office_area_id, ro.r_office_name " +
+            "FROM jc_student_child soch" +
+            "INNER JOIN jc_register_office ro ON ro.r_office_id = soch.ch_register_office_id" +
+            "WHERE soch.student_order_id IN ";
 
 
     // TODO: 28.09.2022 refactoring - make one method
@@ -142,6 +147,7 @@ public class StudentOrderDaoImpl implements StudentOrderDao {
 
             statement.setInt(1, StudentOrderStatus.START.ordinal());
             ResultSet resultSet = statement.executeQuery();
+            List<Long> ids = new LinkedList<>();
             while (resultSet.next()) {
                 StudentOrder studentOrder = new StudentOrder();
 
@@ -154,7 +160,15 @@ public class StudentOrderDaoImpl implements StudentOrderDao {
                 studentOrder.setWife(wife);
 
                 result.add(studentOrder);
+                ids.add(studentOrder.getStudentOrderId());
             }
+            StringBuilder sb = new StringBuilder("(");
+            for (Long id : ids) {
+                sb.append(sb.length() > 1 ? ", " : "").append(String.valueOf(id));
+            }
+            sb.append(")");
+            System.out.println(sb.toString());
+
             resultSet.close();
         } catch (SQLException ex) {
             throw new DaoException(ex);
