@@ -5,9 +5,11 @@ import main.domain.*;
 import main.exception.DaoException;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class StudentOrderDaoImpl implements StudentOrderDao {
@@ -21,7 +23,8 @@ public class StudentOrderDaoImpl implements StudentOrderDao {
             "w_passport_number, w_passport_date, w_passport_office_id, w_post_index," +
             "w_street_code, w_building, w_extension, w_apartment, w_university_id, w_student_number, " +
             "certificate_id, register_office_id, marriage_date)" +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
+            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
     private static final String INSERT_CHILD = "INSERT INTO jc_student_child(" +
             "student_order_id, ch_sur_name, ch_given_name, ch_patronymic," +
@@ -37,7 +40,7 @@ public class StudentOrderDaoImpl implements StudentOrderDao {
             "INNER JOIN jc_passport_office po_h ON po_h.p_office_id = so.h_passport_office_id " +
             "INNER JOIN jc_passport_office po_w ON po_w.p_office_id = so.w_passport_office_id " +
             "WHERE student_order_status = ? ORDER BY student_order_date; ";
-    
+
     public static final String SELECT_CHILD = "SELECT soch.*, ro.r_office_area_id, ro.r_office_name " +
             "FROM jc_student_child soch " +
             "INNER JOIN jc_register_office ro ON ro.r_office_id = soch.ch_register_office_id " +
@@ -46,11 +49,11 @@ public class StudentOrderDaoImpl implements StudentOrderDao {
 
     // TODO: 28.09.2022 refactoring - make one method
     private Connection getConnection() throws SQLException {
-        Connection conn = DriverManager.getConnection(
+        Connection connection = DriverManager.getConnection(
                 Config.getProperty(Config.DB_URL),
                 Config.getProperty(Config.DB_LOGIN),
                 Config.getProperty(Config.DB_PASSWORD));
-        return conn;
+        return connection;
     }
 
     @Override
@@ -170,14 +173,19 @@ public class StudentOrderDaoImpl implements StudentOrderDao {
         return result;
     }
 
-    private void findChildren(Connection conn, List<StudentOrder> result) throws SQLException {
-        String collect = "(" +  result.stream().map(so -> String.valueOf(so.getStudentOrderId()))
+    private void findChildren(Connection connection, List<StudentOrder> result) throws SQLException {
+        String collect = "(" + result.stream().map(so -> String.valueOf(so.getStudentOrderId()))
                 .collect(Collectors.joining(",")) + ")";
 
-        try (PreparedStatement stmt = conn.prepareStatement(SELECT_CHILD + collect)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                System.out.println(rs.getLong(1) + ":" + rs.getString(3));
+        Map<Long, StudentOrder> maps = result.stream().collect(Collectors
+                .toMap(studentOrder -> studentOrder.getStudentOrderId(), studentOrder -> studentOrder));
+
+        try (PreparedStatement statement = connection.prepareStatement(SELECT_CHILD + collect)) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Child ch = fillChild(resultSet);
+                StudentOrder studentOrder = maps.get(resultSet.getLong("student_order_id"));
+                studentOrder.addChild(ch);
             }
         }
     }
@@ -229,5 +237,34 @@ public class StudentOrderDaoImpl implements StudentOrderDao {
         String name = resultSet.getString("r_office_name");
         RegisterOffice ro = new RegisterOffice(roId, areaId, name);
         studentOrder.setMarriageOffice(ro);
+    }
+
+    private Child fillChild(ResultSet rs) throws SQLException {
+        String surName = rs.getString("ch_sur_name");
+        String givenName = rs.getString("ch_given_name");
+        String patronymic = rs.getString("ch_patronymic");
+        LocalDate dateOfBirth = rs.getDate("ch_date_of_birth").toLocalDate();
+
+        Child child = new Child(surName, givenName, patronymic, dateOfBirth);
+
+        child.setCertificateNumber(rs.getString("ch_certificate_number"));
+        child.setIssueDate(rs.getDate("ch_certificate_date").toLocalDate());
+
+        Long registerOfficeId = rs.getLong("ch_register_office_id");
+        String registerOfficeAreaId = rs.getString("r_office_area_id");
+        String registerOfficeName = rs.getString("r_office_name");
+        RegisterOffice ro = new RegisterOffice(registerOfficeId, registerOfficeAreaId, registerOfficeName);
+        child.setIssueDepartment(ro);
+
+        Address address = new Address();
+        address.setPostCode(rs.getString("ch_post_index"));
+        Street street = new Street(rs.getLong("ch_street_code"), "");
+        address.setStreet(street);
+        address.setBuilding(rs.getString("ch_building"));
+        address.setExtension(rs.getString("ch_extension"));
+        address.setApartment(rs.getString("ch_apartment"));
+        child.setAddress(address);
+
+        return child;
     }
 }
