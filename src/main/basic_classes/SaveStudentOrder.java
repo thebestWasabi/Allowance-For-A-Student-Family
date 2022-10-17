@@ -48,8 +48,8 @@ public class SaveStudentOrder {
 //        System.out.println(id);
 
         List<StudentOrder> soList = dao.getStudentOrders();
-        for (StudentOrder so : soList) {
-            System.out.println(so.getStudentOrderId());
+        for (StudentOrder studentOrder : soList) {
+            System.out.println(studentOrder.getStudentOrderId());
         }
     }
 
